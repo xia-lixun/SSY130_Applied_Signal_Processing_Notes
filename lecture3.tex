@@ -1,0 +1,148 @@
+\chapter*{Lecture 3}
+
+\section*{More on DFT}
+When we have collected $\{x(n)\} \quad n = 0 \dots N-1$, 
+the DFT of $x(n)$ can be obtained as 
+$X(k)=\sum_{n=0}^{N-1}x(n)e^{-j2\pi k n / N} \quad k = 0 \dots N-1$.
+What does this periodic $X(k)$ tell us about $X(\omega)$, $x(n)$?
+
+\begin{itemize}
+\item[(1)] $x(n)$ is N-periodic. Then the corresponding DFT yields the Fourier 
+series coefficients. DTFT can be calculated as:
+\begin{equation}
+  \label{eq:dftdtft}
+  \begin{aligned}
+    & X(\omega)=\sum_{k=0}^{N-1}X(k)2\pi\delta(\omega-\frac{2\pi k}{N}) \\
+    & \omega = [0 \quad 2\pi] \quad \text{and periodic} \quad k = 0 \dots N-1\\ 
+  \end{aligned}
+\end{equation}
+\item[(2)] $x(n)=0$ when $n<0$ and $n > N-1$. We have DFT as samples 
+of DTFT.
+  \begin{equation}
+    \label{eq:dftsample}
+    X(k) = X(\omega=\frac{2\pi k}{N})
+  \end{equation}
+\item[(3)]$x(n)$ is unknown outside $[0 \dots N-1]$. Then the sample sequence 
+we study is the windowed sequence, shown below.
+\begin{equation}
+  \label{eq:dftwindow}
+  \begin{aligned}
+   &  \hat{x}(n) = r_N(n)x(n) \\
+   & \text{where} \quad r_N(n) \quad \text{is the rectangular function} \\
+   & \text{and} \quad \hat{x}(n) \quad \text{is the windowed signal}\\
+  & X(k) = \hat{X}(\frac{2\pi k}{N}) = \frac{1}{2\pi}\int_{0}^{2\pi}X(\frac{2\pi k}{N}-\lambda)R_N(\lambda)d\lambda
+  \end{aligned}
+\end{equation}
+Hence DFT here is the sample of the windowed DTFT.
+\end{itemize}
+
+Assume $x(n)$ and $n=0 \dots N-1$. Let $N_z > N$,
+\begin{equation}
+  \label{eq:zeropad}
+  \begin{aligned}
+    & \hat{x}(n) = x(n) \quad \text{when} n = 0 \dots N-1\\
+    & \hat{x}(n) = 0 \quad \text{when} n=N \dots N_z-1 \\
+  \end{aligned}
+\end{equation}
+calculate the $N_z$ long DFT of $\hat{x}(n)$.
+\begin{equation}
+  \label{eq:zeropadding}
+\begin{aligned}
+& \hat{X}(k)=\sum_{n=0}^{N_z-1}\hat{x}(n)e^{\frac{-j2\pi k n}{N_z}}=\sum_{n=0}^{N-1}x(n)e^{\frac{-j2\pi k n}{N_z}}  \\
+& k = 0 \dots N_z-1 \\
+\end{aligned}
+\end{equation}
+By zero padding, without change of the information, the resolution of the frequency function has increased. 
+
+\section*{FFT}
+
+\begin{equation}
+  \label{eq:fftprinciple}
+  \begin{aligned}
+&    X(k) = \sum_{n=0}^{N-1}x(n)W_N^{kn} \\
+& k = 0 \dots N-1 \\
+& W_N = e^{\frac{-j2\pi}{N}}\\
+  \end{aligned}
+\end{equation}
+
+If $N=2^P$ where $P$ is an integer, then
+\begin{equation}
+  \label{eq:evenodd}
+  \begin{aligned}
+&    X(k) = \sum_{n=0}^{N/2-1}x(2n)W_{N/2}^{kn} + W_N^k\sum_{n=0}^{N/2-1}x(2n+1)W_{N/2}^{kn} \\
+& = X_e(k) + W_N^k X_o(k) \\
+  \end{aligned}
+\end{equation}
+The key observation for such radix-2 FFT is that $X_e(k)$ and $X_o(k)$ are periodic with period $N/2$.
+This means that it only needs to evaluate from $0 \dots N/2-1$, and uses periodicity for 
+$N/2 \dots N-1$. 
+\begin{equation}
+  \label{eq:fftdetail}
+  \begin{aligned}
+&    X_o(k) = X_o(k+\frac{N}{2}) \\
+& X(k) = X_e(k)+W_N^kX_o(k) \quad \text{for} \quad k=0 \dots N/2-1\\
+& X(k+N/2) = X_e(k) -W_N^kX_o(k) \quad \text{since} \quad W_N^{k+N/2} = -W_n^k\\
+  \end{aligned}
+\end{equation}
+
+Only $N/2$ multiplications are needed plus $2\times N/2$ DFT operations. 
+Recursively we can do the same over and again, until $N=2$ and $W_2=-1$.
+\begin{equation}
+  \label{eq:down}
+  \begin{aligned}
+&    X(0) = X(0) + X(1) \\
+& X(1) = X(0) - X(1) \\
+  \end{aligned}
+\end{equation}
+Finally we have $T(n) = 2T(n/2) + n/2$, which belongs to $O(nlogn)$, compared to
+the $O(N^2)$ complexity of default calculation. 
+
+\section*{Filtering With FFT}
+
+Now we simplify the filtering(convolution) model as finite impulse response(FIR), 
+which can be described as:
+\begin{equation}
+  \label{eq:ffft}
+  \begin{aligned}
+    & y(n) = \sum_{k=0}^{M-1}h(k)x(n-k)\\
+   & \{x(n)\} \quad n= 0 \dots N-1 \quad \text{and} \quad \{h(n)\} \quad n = 0 \dots M-1\\
+ & M < N \\
+  \end{aligned}
+\end{equation}
+
+There are total two cases to solve the equation in \ref{eq:ffft}:
+\begin{itemize}
+\item[(1)] $x(n) = 0 \quad n<0$
+\item[(2)] $x(n)$ is partially periodic, i.e. $x(-n) = x(-n+N) \quad n=0 \dots M-1$
+\end{itemize}
+
+For the first case, by DTFT we have $Y(\omega)=H(\omega)X(\omega)$.
+To calculate $y(n)$, possibly non-zero after $n=0 \dots N+M-2$, it can 
+be derived as:
+\begin{equation}
+  \label{eq:convfft}
+  y(n) = \frac{1}{N+M-1}\sum_{k=0}^{N+M-2}Y(k)W_{N+M-1}^{-nk}
+\end{equation}
+
+So we need to know $Y(k) = Y(\frac{2\pi k}{N+M-1}) \quad k = 0 \dots N+M-2$. 
+We also have to calculate $H(\frac{2\pi k}{N+M-1})$ and $X(\frac{2\pi k}{N+M-1})$.
+As a result, the signals $x(n)$ and $h(n)$ both can be zero padded to length $N+M-1$,
+and then the DFT can be calculated, as demonstrated in equation \ref{eq:eqfft}.
+\begin{equation}
+  \label{eq:eqfft}
+  \begin{aligned}
+    & y(n) = DFT^{-1}\{ DFT_{N+M-1}\{x(n)\} DFT_{N+M-1}\{h(n)\}  \}\\
+  & Y(K) = H(k)X(k)\\
+  \end{aligned}
+\end{equation}
+
+For the second case, if $x(n)$ is periodic, or at least partially periodic, 
+then it can be inferred that $y(n)$ is also periodic. Consequently, 
+just the FIR filter is required to be zero padded to length $N$. 
+\begin{equation}
+  \label{eq:perprefix}
+  \begin{aligned}
+    & y(n) = \frac{1}{N}\sum_{k=0}^{N-1}Y(k)e^{\frac{j2\pi k n}{N}}\\
+& Y(k) = H(k)X(k) \\
+  \end{aligned}
+\end{equation}

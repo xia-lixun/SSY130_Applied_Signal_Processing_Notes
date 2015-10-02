@@ -1,0 +1,294 @@
+\chapter*{Lecture 2}
+
+
+\section*{Linear Systems}
+
+Linear systems, also called filtering, has its output calculated as convolution of the input signal and 
+the impulse response of the system(filter) in time domain, as shown in equation \ref{convolution}.
+
+\begin{equation}
+y(t) = \int_{-\infty}^{\infty}h(\tau)x(t-\tau)d\tau = x(t) \ast h(t)
+\label{convolution}
+\end{equation}
+where $x(t)$ is the input signal and $h(t)$ is the impulse response of the linear system. 
+Equation \ref{convolution} implies that:
+
+\begin{itemize}
+\item[(1)] if $x(t) = \delta(t)$, then $y(t) = h(t)$. Because
+\begin{equation}
+\int_{-\infty}^{\infty}h(\tau)\delta (t-\tau) d\tau = \int_{-\infty}^{\infty}h(t-\lambda)\delta (\lambda) d\lambda = h(t)
+\end{equation}
+\item[(2)] Linearity. $k x(t) \implies k y(t)$, $x_1(t) + x_2(t) \implies y_1(t) + y_2(t)$.
+\item[(3)] Time invariant. $x(t-\Delta) \implies y(t-\Delta)$, i.e. $h(\tau)$ does not depend on $t$ in equation \ref{convolution}.
+\item[(4)] Causality. $h(\tau) = 0$ for $\tau < 0$. To make the filter physically realizable, this constraint must be fulfilled. 
+\end{itemize}
+
+The Fourier transform of the convolution equation, \ref{convolution} will be 
+\begin{equation}
+Y(\omega) = H(\omega)X(\omega)
+\end{equation}
+where $H(\omega) = \mathbb{FT}[h(t)]$ is called the frequency function of the filter(linear system). 
+
+For example, 
+\begin{equation}
+\begin{aligned}
+& x(t)=e^{j\omega_0t}   \implies {X}(\omega) = 2\pi\delta(\omega-\omega_0) \\
+& {Y}(\omega) = {H}(\omega) 2 \pi \delta (\omega - \omega_0)  \\
+&  y(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} {H}(\omega)2\pi\delta(\omega - \omega_0) e^{j\omega t} d\omega 
+= {H}(\omega_0)e^{j\omega_0 t}
+\end{aligned}
+\end{equation}
+
+For every frequency function of linear system, $|{H}(\omega)| = A(\omega)$ is called the amplitude function, 
+and $\angle{H}(\omega) = \Phi(\omega)$ is called the phase function of the linear system. 
+Thus ${H}(\omega_0)$ can be written as $A(\omega_0)e^{j\Phi(\omega_0)}$, 
+and the output will be $A(\omega_0)e^{j\omega_0 t + j\Phi(\omega_0)}$.
+
+\section*{Sampled Data System and Discrete-Time Systems}
+
+Discrete time signal $\{x(n)\}$, $n=0 \pm 1 \pm 2 \dots$ is often associated with a continuous time signal $x(t)$ by sampling.
+i.e. $x(n) \triangleq x(n T_s)$, where $T_s$ is the sampling period. $f_s = 1/T_s$ is the sampling
+frequency in Hz. $\omega_s = 2\pi f_s = 2\pi / T_s$ is the sampling angular frequency in radians per second. 
+$f_s/2$ is called Nyquist frequency. Please note the difference between Nyquist frequency and Nyquist rate.
+
+\begin{equation}
+{X}(\omega) \triangleq \sum_{n = -\infty}^{\infty}x(n)e^{-j\omega T_s n}
+\label{DTFT}
+\end{equation} 
+
+The Discrete-Time Fourier Transform of a sampled sequence is defined in equation \ref{DTFT},
+where $\omega T_s$ has the unit of radians per sample. It can also be regarded as the normalized frequency because of the 
+other form $\omega/f_s$. We can further expand the $\omega$ into $2\pi f$, then we have $\omega T_s = 2\pi f /f_s$. 
+Note that ${X}{\omega} = {X}(\omega + k\omega_s)$, $k = 0 \pm 1 \pm 2 \dots$, which can be proved 
+by the periodicity of the complex exponential function. The periodicity of the frequency function and the sampling frequency 
+also explain the aliasing effects during sampling of real-numbered signals. 
+
+The inverse DTFT is defined as 
+\begin{equation}
+x(n) = \frac{1}{2\pi f_s} \int_0^{2\pi f_s} {X}(\omega)e^{j\omega T_s n} d\omega
+\end{equation} 
+
+Take unit delay for instance, we have $y(n) \triangleq x(n-1)$, then
+\begin{equation}
+{Y}(\omega) = \sum_{-\infty}^{\infty}x(n-1)e^{-j\omega T_s n} = 
+\sum_{m = -\infty}^{\infty}x(m)e^{-j\omega T_s m} e^{-j\omega T_s}= e^{-j\omega T_s} {X}(\omega)
+\label{eq:ftdelay}
+\end{equation}
+
+The general difference equation of a linear system can be written as 
+\begin{equation}
+y(n) = - \sum_{k=1}^{N_a} a_k y(n-k) + \sum_{k=0}^{N_b} b_k x(n-k)
+\label{eq:lineardiff}
+\end{equation}
+
+By the result of example \ref{eq:ftdelay}, we take the Fourier transform of equation \ref{eq:lineardiff}
+to obtain the transfer function of the linear system, described in equation \ref{eq:transferomega}. 
+\begin{equation}
+Y(\omega) = \frac{\sum_{k=0}^{N_b}b_k e^{-j\omega T_s k}}{\sum_{k=1}^{N_a} a_k e^{-j\omega T_s k} + 1} X(\omega)
+\label{eq:transferomega}
+\end{equation}
+
+If $z = e^{j\omega T_s}$, then we can change the transfer function \ref{eq:transferomega} of $\omega$ into
+Z transformation. 
+\begin{equation}
+H(z) = \frac{\sum_{k=0}^{N_b}b_k z^{-k}}{1+\sum_{k=1}^{N_a}a_k z^{-k}} = \frac{b(z)}{a(z)}
+\label{eq:transferz}
+\end{equation} 
+
+Roots of $a(z)$ are called poles and roots of $b(k)$ are called zeros. The linear system is 
+stable if all poles are inside the unit circle. We can expend the close form of the impulse 
+response in equation \ref{eq:transferomega} and \ref{eq:transferz} into series, 
+as shown in equation \ref{eq:expand}.
+\begin{equation}
+\begin{aligned}
+& H(\omega)=\frac{\sum_{k=0}^{N_b}b_k e^{-j\omega T_s k}}{\sum_{k=1}^{N_a} a_k e^{-j\omega T_s k} + 1}
+=\sum_{k=0}^{\infty}h(k) e ^{-j\omega T_s k} \\
+& H(z) = \frac{\sum_{k=0}^{N_b}b_k z^{-k}}{1+\sum_{k=1}^{N_a}a_k z^{-k}}  
+=\sum_{k=0}^{\infty}h(k) z^{-k} \\
+\end{aligned}
+\label{eq:expand}
+\end{equation} 
+
+where $h(k)$ is the impulse response of the system in time doamin. The system output will be
+\begin{equation}
+Y(\omega) = H(\omega)X(\omega) = \sum_{k=0}^{\infty}h(k)e^{-j\omega T_s k} X(\omega)
+\end{equation}
+
+After inverse DTFT, we have
+\begin{equation}
+\begin{aligned}
+& y(n)  = \frac{T_s}{2\pi}\int_{0}^{2\pi /T_s} \sum_{k=0}^{\infty}h(k)e^{-j\omega T_s k}X(\omega) e^{j\omega T_s n} d\omega \\
+      & = \sum_{k=0}^{\infty} h(k) \frac{T_s}{2\pi}\int_{0}^{2\pi /T_s} X(\omega) e^{j\omega T_s (n-k)} d\omega\\
+     & = \sum_{k=0}^{\infty} h(k) x(n-k) \\ 
+\end{aligned}
+\end{equation}
+This is the convolution(filtering) of the input signal and the linear system. 
+
+\section*{Sampling Process}
+
+The mathematical model for sampling can be derived by multiplication of the continuous 
+input signal $x(t)$ by Dirac Delta pulse train $\delta_T(t) = \sum_{n=-\infty}^{\infty}\delta(t-nT_s)$.
+Thus there will be equation \ref{eq:sample}
+
+\begin{equation}
+\begin{aligned}
+& x_c(t)  = \sum_{n=-\infty}^{\infty}\delta (t-nT_s)x(t) \\
+         & = \sum_{n=-\infty}^{\infty}\delta (t-nT_s)x(nT_s) \\
+\end{aligned}
+\label{eq:sample}
+\end{equation}
+
+Special care must be taken here: $x_c(t)$ is a continuous signal having the same value 
+with the sampled sequence $x_d(n) = x(nT_s)$ at sample instants. So only Fourier 
+transform can be exercised here for $x_c(t)$, as shown in equation \ref{eq:dtftlema}.
+
+\begin{equation}
+\begin{aligned}
+& FT\{x_c(t)\}  =\int_{-\infty}^{\infty}\sum_{n=-\infty}^{\infty}\delta (t-nT_s)x(nT_s)e^{-j\omega t} dt \\
+& = \sum_{n=-\infty}^{\infty}\int_{n=-\infty}^{\infty} \delta (t-nT_s)x(nT_s)e^{-j\omega t} dt \\
+& = \sum_{n=-\infty}^{\infty}x(nT_s)e^{-j\omega T_s n}\\
+ & = \sum_{n=-\infty}^{\infty}x(n)e^{-j\omega_d n}\\
+\end{aligned}
+\label{eq:dtftlema}
+\end{equation}
+where $\omega_d = \omega T_s$ is the digital angular frequency in radians per sample,
+and $x(n)$ is the discrete sequence of sampled $x(t)$, as introduced before. 
+
+Therefore we define that the Fourier transform of the sampled signal to be 
+discrete time Fourier transform, A.K.A. DTFT. This can be described by equation below.
+
+\begin{equation}
+FT\{x_c(t)\} = X_c(\omega) = X_d(\omega) = DTFT\{x_d(n)\}
+\end{equation}
+
+But, what is the relationship between the spectral of the sample sequence and 
+that of the continuous signal? Again we use Fourier transform to make the analysis.
+
+\begin{equation}
+\begin{aligned}
+& x(nT_s)  = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(\omega)e^{j\omega n T_s} d\omega \\
+& = \frac{1}{2\pi}\sum_{k=-\infty}^{\infty}\int_{\frac{k2\pi}{T_s}}^{\frac{(k+1)2\pi}{T_s}}X(\omega)e^{j\omega n T_s} d\omega \\
+& \text{assume} \quad \omega  = \omega ' + \frac{2\pi k}{T_s}\\
+& = \frac{1}{2\pi}\sum_{k=-\infty}^{\infty}\int_{0}^{\frac{2\pi}{T_s}}
+X(\omega' +\frac{2\pi k}{T_s})e^{j(\omega' + \frac{2\pi k}{T_s}) n T_s} d\omega' \\
+& = \frac{T_s}{2\pi}\int_{0}^{\frac{2\pi}{T_s}}\frac{1}{T_s}\sum_{k=-\infty}^{\infty}
+X(\omega' +\frac{2\pi k}{T_s})e^{j\omega'  n T_s} d\omega' \\
+& = DTFT^{-1}\{\frac{1}{T_s}\sum_{k=-\infty}^{\infty}X(\omega' +\frac{2\pi k}{T_s})\}\\
+\end{aligned}
+\label{eq:xdx}
+\end{equation}
+
+Then we can conclude that the relationship between the continuous signal and its sample 
+sequence is much like the process of down sampling, as described in equation \ref{eq:cdrelation}.
+\begin{equation}
+X_c(\omega) = X_d(\omega) = \frac{1}{T_s} \sum_{k=-\infty}^{\infty}X(\omega+\frac{2\pi k}{T_s})
+\label{eq:cdrelation}
+\end{equation}
+
+Here comes the Nyquist sampling theorem,
+\begin{theorem}
+if $|X(\omega)|=0$ for all $|\omega| \ge \pi/T_s = \omega_s/2$(Nyquist frequency),
+then $X_d(\omega) = 1/T_s X(\omega)$ for $|\omega| < \omega_s/2$, and all 
+information in $x(t)$ is preserved in $x_d(n)$. 
+\end{theorem}
+
+\section*{Reconstruction}
+
+A practical implementation of D/A conversion is the zero-order hold reconstruction, 
+which is piecewise constant within each sample, i.e. $y_r(t) = y_d(t)$, where 
+$nT_s  \le t < (n+1)T_s$. Zero-order hold reconstruction can be modeled as 
+filtering, which can be described as:
+\begin{equation}
+\begin{aligned}
+& y_c(t)  = \sum_{n=-\infty}^{\infty}y_d(n)\delta(t-nT_s)\\
+& h_{zoh}(t)  = 1 \quad  \text{when} 0 \le t < T_s \\
+& h_{zoh}(t)  = 0 \quad  \text{otherwise}\\
+\end{aligned}
+\end{equation}
+
+Then the Fourier transform of the convolution can be calculated in frequency 
+domain as multiplication.
+\begin{equation}
+  \label{eq:zohconv}
+  \begin{aligned}
+   &  Y_r(\omega)  = H_{zoh}(\omega)Y_c(\omega) \\
+   & H_{zoh}(\omega) = FT\{h_{zoh}(t)\}=T_s e^{\frac{-j\omega T_s}{2}}\frac{sin(\frac{\omega T_s}{2})}{\frac{\omega T_s}{2}}\\
+   & H_{zoh}(0)  = T_s \\
+   & H_{zoh}(\frac{2\pi}{T_s})  = 0 \\
+  \end{aligned}
+\end{equation}
+
+To sum up, for the entire DSP system, the reconstructed output can be calculated in equation \ref{eq:total}.
+Note that $P(\omega)$ and $X_d(\omega)$ are $2\pi/T_s$ periodic. 
+\begin{equation}
+  \label{eq:total}
+  \begin{aligned}
+    & Y_r(\omega)  = H_{zoh}(\omega)P(\omega)[\frac{1}{T_s}\sum_{k=-\infty}^{\infty}X(\omega+\frac{2\pi k}{T_s})] \\
+    & \text{where}\quad P(\omega) \quad \text{is the DTFT of the processing units} \\
+    & \text{and} \quad X_d(\omega) = \frac{1}{T_s}\sum_{k=-\infty}^{\infty}X(\omega+\frac{2\pi k}{T_s})\\
+  \end{aligned}
+\end{equation}
+
+Sidelobes are caused by ZOH. Since $H_{zoh}(\omega)$ is non-zero outside $[-\pi/T_s \quad \pi/T_s]$, 
+low-pass filter is need to eliminate this effect. In the sampling, aliasing is avoided or reduced by 
+a low pass filter before the sampling A/D converter. 
+
+\section*{Frequency analysis of signals}
+
+We have already familiar with the convolution-multiplication transformation pair, as shown below.
+\begin{equation}
+  \label{eq:pair}
+  \begin{aligned}
+    & y(n) = \sum_{k=-\infty}^{\infty}h(k)x(n-k) \iff Y(\omega) = H(\omega)X(\omega)\\
+    & y(n) = x(n)w(n) \iff Y(\omega) = \frac{T_s}{2\pi}\int_{0}^{2\pi f_s}X(\lambda)W(\omega-\lambda)d\lambda\\
+  \end{aligned}
+\end{equation}
+For practical cases, we always focus on certain interval of a infinite long sample sequence, 
+and this is known as windowing. Hence the signal we actually interest in is the multiplication
+of the ideal infinite long sample sequence and the window functions. For example, the
+rectangular window function can be written as:
+\begin{equation}
+  \label{eq:rectan}
+  \begin{aligned}
+&    r_w(n) = 1 \quad \text{when} \quad n = 0 \dots N-1 \\
+&    r_w(n) = 0 \quad \text{otherwise}\\
+  \end{aligned}
+\end{equation}
+
+Let $\hat{x}(n) = r_w(n)x(n)$, and $R_w(\omega)=\sum_{n=-\infty}^{\infty}r_w(n)e^{-j\omega n}
+=\sum_{n=0}^{N-1}e^{-j\omega n}=\frac{1-e^{j\omega N}}{1-e^{j\omega}}
+=e^{-j(N-2)/2\omega}sin(N\omega /2)/sin(\omega /2)$. We can see that 
+$R_w(0) = N$, and $R_w(\omega)=0$ for $\omega = 2\pi/N \quad 4\pi/N \dots $. 
+$R_w(\omega)$ is periodic with $2\pi$. The mainlobe width is proportional to 
+$1/N$, when $N$ increases to infinity, the Fourier transform of the window 
+function converges to Dirac delta function. The peak level ratio between 
+mainlobe and sidelobe are constant 13dB. 
+
+Since $\hat{X}(\omega) = 1/2\pi\int X(\omega-\lambda)R_w(\lambda)d\lambda$,
+when $\omega \rightarrow \infty$, $R_w(\lambda) = 2\pi\delta(\lambda)$, 
+then $\implies \hat{X}(\omega) = X(\omega)$.
+
+If we sample the windowed DTFT at frequencies $\omega_k=2\pi k/N$, 
+then we have defined the Discrete Fourier Transform(DFT), shown in equation \ref{eq:DFT}.
+\begin{equation}
+  \label{eq:DFT}
+  \begin{aligned}
+    & \hat{X}(\omega)=\sum_{n=0}^{N-1}x(n)e^{-j\omega n} \\
+    & X(k) = \hat{\frac{2\pi k}{N}} = \sum_{n=0}^{N-1}x(n)e^{-j\frac{2\pi k}{N}n}\\
+    & k = 0 \dots N-1 \\
+  \end{aligned}
+\end{equation}
+
+The inverse DFT has been defined in equation \ref{eq:IDFT}.
+\begin{equation}
+  \label{eq:IDFT}
+  \begin{aligned}
+    & x(n) = \frac{1}{N}\sum_{k=0}^{N-1}X(k)e^{j\frac{2\pi k}{N}n}\\
+    & n = 0 \dots N-1 \\
+  \end{aligned}
+\end{equation}
+
+DFT is linear invertible transformation. $X(N) = X(0)$ because $X(k)$ is 
+$N$ periodic function. $x(n)$ is also $N$ periodic if calculated by IDFT.
+The IDFT relation is a Fourier series representation of the N-periodic signal. 
+

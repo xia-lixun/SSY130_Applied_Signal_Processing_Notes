@@ -1,0 +1,104 @@
+
+\chapter*{Lecture 1}
+
+\section*{Introduction}
+
+Signals are everywhere. For example voltage, current, electromagnetic fields, acoustic signals, sound waves, 
+vibrations, angular motions, velocities, they are all continuous in time. Some signals are continuous in space,
+like sound pressure. 
+
+Sampling leads to the ability to process the signals algorithmically perhaps in a computer. The availability of low 
+cost low power digital devices has lead to an enormous development of DSP application:
+ speech, audio, music, noise reduction, coding compression(MPEG, MP3, CD, DVD);
+ image, movie;
+ radio, mobile phones, modulations, transmission;
+ radar, sonar, target detection, tracking;
+ control, servo, mechanics, plant control;
+ biomedical, analysis diagnosis, monitoring, telemedicine;
+
+But what on earth is a DSP system? Basically it covers the following functions:
+processing of signals : filtering, modulation, etc, and these are characterized as change of the signals;
+analysis of signals : transform, model based analysis, etc, and these are characterized as extracting features;
+the last category is detection and classification, and we will not discuss this topic in this course.
+
+In DSP implementation, the basic building block is the gate logic, this is almost the lowest level of the system. 
+There are other different layers of abstraction. Desktop computer can be put at the higest level, 
+where the development relies purely on software. Dedicated signal processor, which is processor$+$software style,
+is in the middle. ASIC/FPGA is at the bottom. 
+
+A DSP system has certain properties. In a DSP system, signal is always quantized(in amplitude) and 
+sampled(in temporal), which leads to not exact response of its continuous counterpart. 
+AD/DA converters impose extra costs to the system. 
+Besides the system has limited bandwidth, because of limited clock frequencies of digital circuits.
+Although at all those costs, a DSP system has many attracting features. It has a good control of accuracy, 
+no drift-away temperature affections that usually encountered in analog circuits. 
+Many complex algorithms can be realized. Flexibility and adaptivity can also be achieved. 
+Another interesting pro is that low frequency is easy to achieve, which is hard for analog circuits.
+
+\section*{Fourier Transfrom}
+
+signal processing classically deals with spectral contents. Why? 
+\textbf{The complex exponential $e^{j\omega t}$ forms a basis for all solutions to linear dynamic systems}.
+The Fourier or Laplace transform forms the analytical means of such solutions.
+\begin{equation}
+\begin{aligned}
+ &{X}(\omega) = \mathcal{F}[x(t)] \triangleq \int_{-\infty}^{\infty} x(t)e^{-j\omega t} dt \\
+ & x(t) = \mathcal{F}^{-1}[{X}(\omega)] \triangleq \frac{1}{2\pi} \int_{-\infty}^{\infty} x(t)e^{j\omega t} d\omega \\
+\end{aligned}
+\end{equation}
+
+The signal energy can be written as
+\begin{equation}
+{E} = \int_{-\infty}^{\infty} |x(t)|^2dt = \frac{1}{2\pi}\int_{-\infty}^{\infty}|{X}(\omega)|^2d\omega
+\end{equation}
+where $|{X}(\omega)|$ as the amplitude of Fourier transform of $x(t)$ shows how the signal can be 
+decomposed into different frequency components. Similarly, $|{X}(\omega)|^2$ shows how the power 
+is distributed along the frequency axis. Here we introduce Dirac delta function for analog signals. 
+\begin{equation}
+\begin{aligned}
+&\delta(t)  = 0, t \neq 0 \\
+&\delta(t)  = \infty, t = 0 \\
+&\int_{-\infty}^{\infty}\delta(t) dt = 1\\ 
+&\int_{-\infty}^{\infty}\delta(t-a)f(t) dt  = f(a)\\ 
+\end{aligned}
+\end{equation}
+
+These are some properties for Fourier transform.
+
+\begin{table}[H]
+\begin{center}
+\caption{Properties of Fourier Transform}
+\scalebox{1.0}{
+\begin{tabular}{|c|c|c|}
+\hline
+     \multicolumn{2}{|c|}{$x(t)$}   &  ${X}(\omega)$ \\ 
+\cline{1-3}
+linearity  & $ax(t) + by(t)$  &  $a{X}(\omega) + b{Y}(\omega)$ \\
+\cline{1-3}
+swapping  &  ${X}(t)$  & $2\pi x(-\omega)$ \\
+\cline{1-3}
+scale in time domain & $x(at)$  &  $\frac{1}{|a|}{X}(\frac{\omega}{a})$ \\
+\cline{1-3}
+ delay-modulation dual &$x(t-t_0)$  &  ${X}(\omega)e^{-jt_0\omega}$  \\ 
+\cline{1-3}
+ delay-modulation dual &  $e^{j\omega_0t}x(t)$ & ${X}(\omega - \omega_0)$ \\
+\cline{1-3}
+  differentiate dual & $\frac{d^n x(t)}{dt^n}$ & $(j\omega)^n{X}(\omega)$ \\
+\cline{1-3}
+ differentiate dual & $t^n x(t)$ & $j^n \frac{d^n{X}(\omega)}{d\omega^n}$ \\
+\cline{1-3}
+multiplication-convolution dual &  $\int_{-\infty}^{\infty}h(\tau)x(t-\tau)d\tau$   &   ${H}(\omega){X}(\omega)$  \\
+\cline{1-3}
+multiplication-convolution dual & $h(t)x(t)$ & $\frac{1}{2\pi} \int_{-\infty}^{\infty}{H}(\tau){X}(\omega-\tau) d\tau$ \\
+\cline{1-3}
+   constant(infinite energy)& $1$ & $2\pi\delta(\omega)$ \\
+\cline{1-3}
+  delta function  &  $\delta(t)$  &  1 \\
+\hline
+\end{tabular}
+}
+\label{fourierproperty}
+\end{center}
+\end{table} 
+
+

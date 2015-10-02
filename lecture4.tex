@@ -1,0 +1,165 @@
+\chapter*{Lecture 4}
+
+\section*{Filter Design}
+
+In order to design digital filters, we start by revisiting the linear convolution:
+\begin{equation}
+  \label{eq:firconv}
+  y(n) = \sum_{k=-\infty}^{\infty}h(k)x(n-k)=\sum_{k=-\infty}^{\infty}x(k)h(n-k)
+\end{equation}
+Infinite length of the filter and non-causality are not suitable for real implementation.
+Thus we have classified the filters by two categories both with causal structure 
+(impulse response be zero in time domain when $t<0$) and finite filter length:
+finite impulse response and infinite impulse response filter. 
+
+FIR filter has the form of equation \ref{eq:firf}.
+\begin{equation}
+  \label{eq:firf}
+  y(n) = \sum_{k=0}^{M}h(k)x(n-k)
+\end{equation}
+While IIR filter has the form of equation \ref{eq:iirf},
+\begin{equation}
+  \label{eq:iirf}
+  y(n)=-\sum_{k=1}^{M_a}a(k)y(n-k) + \sum_{k=0}^{M_b}b(k)x(n-k)
+\end{equation}
+which can also be regarded as a recursive filter since it uses the history values 
+of output for present output calculation, also known as feedback (loop) structure.  
+
+As can be seen from equations above, IIR filter is a generalization of FIR filter. 
+Most filters are designed to be frequency selective, so we design and analyze the 
+filter properties in frequency domain. Sometimes however, an alternative class of 
+filters are designed based on time domain properties, for example signal matched 
+filters.
+
+\section*{The Window Method}
+We try to explain this method by example demonstration, where a low pass 
+filter is designed. The ideal mathematical model of low pass filter is good starting point. 
+An ideal low pass filter can be modeled as a "brick wall" in its frequency function, shown in equation 
+\ref{eq:brickwall},
+\begin{equation}
+  \label{eq:brickwall}
+  H(\omega) = \left\{ \begin{array}{cc}
+       1  &  |\omega| \leq \omega_k \\
+       0  &  \omega_k < |\omega| \leq \pi \\
+       \end{array} \right.
+\end{equation}
+given unity sampling frequency. Hence the inverse DTFT of this frequency 
+function would be
+\begin{equation}
+  \label{eq:bwalltime}
+  h(n) = \left\{ \begin{array}{cc}
+       \frac{\omega_k}{\pi}  &  n=0 \\
+       \frac{sin(\omega_k n)}{\pi n}  &  n \neq 0 \\
+       \end{array} \right.
+\end{equation}
+Note that resulting $h(n)$ is so far non-causal and infinite long, which 
+should be modified for physical implementation. 
+
+Consequently, the task of filter design now has been reduced to 
+how to select $h(k) \quad k=0 \dots M$ such that the filter approximates 
+the ideal behavior. This definitely involves trade-off. Even more, 
+the inverse DFT we developed in previous lectures now turns 
+out to be an improper technique for filter design because 
+it only defines the frequency behavior at limited points. 
+
+The window method for FIR design now becomes finding the 
+finite and causal impulse response $H_d(\omega)$ as the desired response,
+in equation \ref{eq:firapp}.
+\begin{equation}
+  \label{eq:firapp}
+  h_d(\omega)=\frac{1}{2\pi}\int_{-\pi}^{\pi}H_d(\omega)e^{j\omega n}d\omega \quad n=0, \pm 1, \pm 2 \dots
+\end{equation}
+Say 
+\begin{equation}
+  \label{eq:firdesire}
+  H_d(\omega) = \left\{
+    \begin{array}{cc}
+      1 & |\omega| < \omega_c \\
+      0 & \omega_c < |\omega| < 2\pi \\
+    \end{array}
+    \right.
+\end{equation} 
+we have $h_d(n)$ calculated as 
+\begin{equation}
+  \label{eq:firidtft}
+  \begin{aligned}
+    h_d(n) & = \frac{1}{2\pi}\int_{-\omega_c}^{\omega_c}1 (cos(\omega n) + j sin(\omega n)) d\omega \\
+             & = \frac{1}{2\pi} \int_{-\omega_c}^{\omega_c}cos(\omega n) d\omega \\
+            & = \frac{sin(\omega_c n)}{\pi n}\\
+  \end{aligned}
+\end{equation}
+
+Then we make a windowed and delayed version of $h_d(n)$, i.e. we (1) truncate the 
+impulse response of the desired filter with certain symmetrical interval and (2) then
+make a time shift of length $M/2$ to the right, where $M$ is the total length of the 
+filter response.
+
+(1) Truncation. 
+\begin{equation}
+  \label{eq:truncation}
+  h_T(n) = w(n)h_d(n) = \left\{
+    \begin{array}{cc}
+      w(n)h_d(n) & n = 0,\pm 1 \dots \pm M/2 \\
+      0 & otherwise \\
+    \end{array}
+     \right.
+\end{equation}
+This indicates that the truncated filter has the frequency behavior characterized 
+as the convolution of the desired filter and the window function in frequency domain.
+\begin{equation}
+  \label{eq:firwin}
+  H_T(\omega) = \frac{1}{2\pi}\int_{-\pi}^{\pi}H_d(\lambda)W(\omega-\lambda) d \lambda
+\end{equation}
+If $w(n)$ is rectangular window, then we have
+\begin{equation}
+  \label{eq:recwin}
+  W(\omega) = \sum_{n=-\frac{M}{2}}^{\frac{M}{2}}1 e^{-j\omega n} = \frac{sin(\omega(N-1)/2)}{sin(\omega /2)}
+\end{equation}
+
+(2) Time shift, delay $M/2$.
+\begin{equation}
+  \label{eq:firdelay}
+  h(n)=h_T(n-\frac{M}{2}) \implies H(\omega) = e^{-j\omega M/2} H_T(\omega)
+\end{equation}
+which introduces a linear phase shift. 
+
+The window function $w(n)$ is a design parameter, which introduces trade-off between main-lobe width
+(the width of transition region); the side-lobe height is related to stop-band attenuation. 
+
+\begin{table}[H]
+\begin{center}
+\caption{Properties of several window functions}
+\scalebox{1.0}{
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+window function & main-lobe width & side-lobe & transition band & stop band rejection \\
+\cline{1-5}
+  rectangular & $4\pi / M$ & -13dB & $1/N$ & 21dB\\
+\cline{1-5}
+  Hamming & $8\pi /M$  & -31dB & $33/N$& 53dB\\
+\cline{1-5}
+Blackman & $12\pi /M$ & -57dB & $5.5/N$ & 74dB \\
+\hline
+\end{tabular}
+}
+\label{winproperty}
+\end{center}
+\end{table} 
+
+\section*{Symmetric FIR filters}
+\begin{equation}
+  \label{eq:symm}
+  h(n) = h(M-n) \implies H(\omega) = H_r(\omega)e^{-j\omega M/2}
+\end{equation}
+where $H_r(\omega)$ is a real function. We can see that $H(\omega)$ always has 
+a frequency response with linear phase shift. 
+\begin{equation}
+  \label{eq:linearphase}
+  \angle{H(\omega)}= \left\{
+    \begin{array}{cc}
+      -\omega M/2 & if \quad H_r(\omega) > 0 \\
+      -\omega M/2 + \pi & if \quad H_r(\omega) < 0 \\
+    \end{array}
+    \right.
+\end{equation}
+Note that there might be break points in phase plots when using matlab function "angle".

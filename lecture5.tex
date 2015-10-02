@@ -1,0 +1,20 @@
+\chapter*{Lecture 5}
+In this chapter, we introduce some alternative FIR filter design methods,
+as well as IIR design method. 
+
+In the beginning, let's recall the window method discussed in previous lecture.
+\begin{itemize}
+\item[(1)] Select cut-off frequency $\omega_c$
+\item[(1)] Select model order N
+\item[(1)] Select window function
+\end{itemize}
+In Matlab, function "fir1()" may help finish the design procedure with given 
+parameters. For more information please refer to related help files.
+
+\textbf{Frequency sampling method}
+Decide $H(k)$, samples of desired DTFT $H(\omega)$, then use IDFT,
+we have $h(n)$, which is multiplied by the window function $w(n)$,
+resulting in $h'(n)=w(n)h(n)$. In matlab the corresponding function 
+is "fir2()".
+
+
