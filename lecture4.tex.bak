@@ -152,23 +152,10 @@ Blackman & $12\pi /M$ & -57dB & $5.5/N$ & 74dB \\
   h(n) = h(M-n) \implies H(\omega) = H_r(\omega)e^{-j\omega M/2}
 \end{equation}
 where $H_r(\omega)$ is a real function. We can see that $H(\omega)$ always has
-a frequency response with linear phase shift.\footnote{If linear phase of a filter is achieved, the 
-signal convolved with the filter will not be suffered from distortion caused by phase response: all fourier series components are shifted
-to the same direction with the same amount of offset in time domain. For example, a signal that's passing through the filter can be 
-represented as 
-\begin{equation}
- u(t) = \sum_{i = -N}^{N} A_i sin(\omega_i t + \phi_i). 
-\end{equation} 
-Output of the LTI filter gives a signal $y(t)$ that has its amplitude and phase modified:
-\begin{equation}
-\begin{aligned}
- y(t) & =  \int_{x=-\infty}^{\infty}h(x)u(x-t) = \sum_{i = -N}^{N} \hat{A}_i sin(\omega_i t + \phi_i + k\omega) \\
-      & =  \sum_{i = -N}^{N} \hat{A}_i sin(\omega_i (t+k) + \phi_i)    \\
- \end{aligned} 
-\end{equation} 
-Thus for components $A_i sin(\omega_i t + \phi_i)$ they all shift left $k$ seconds in the time axis. The same applies if the signal $u(t)$ can be 
-written in fourier series.
-}
+a frequency response with linear phase shift. (If linear phase is achieved, the
+shape of the signal will not be distorted: all fourier series components are shifted
+to the same direction with the same amount of offset. For example, a signal can be 
+represented as $\sigma_{i = -N}^{N}sin(\omega_i t + \phi_i)$)
 \begin{equation}
   \label{eq:linearphase}
   \angle{H(\omega)}= \left\{
@@ -179,21 +166,3 @@ written in fourier series.
     \right.
 \end{equation}
 Note that there might be break points in phase plots when using matlab function "angle".
-
-\newpage
-Another way of understanding that \textbf{linear phase response only corresponds to symmetrical FIR} can be done by visualizing phasors in the polar coordinate: consider
-a sinusoidal signal $u(t) = sin(\omega t + \phi)$ and then it is sampled into discrete domain $u(n) = sin(\omega/F_s n + \phi)$. The discrete signal is passing through a FIR filter written as $h(n) = \sum_{i=0}^{M}h_i z^{-i}$. We have the output as the superposition of the delayed and amplified version of the input signal $u(n)$:
-\begin{equation}
-\begin{aligned}
- y(n) & =  \sum_{i=0}^{M} h_i sin(\frac{\omega}{F_s}(n - i) + \phi) \\
-      & =  h_0 sin(\frac{\omega}{F_s}n + \phi) + h_1 sin(\frac{\omega}{F_s}(n-1) + \phi) + \cdots + h_M sin(\frac{\omega}{F_s}(n-M) + \phi) \\
-      & =   h_0 sin(\frac{\omega}{F_s}n + \phi) + h_1 sin(\frac{\omega}{F_s}n + \phi - \frac{\omega}{F_s}) + \cdots + h_M sin(\frac{\omega}{F_s}n + \phi- M\frac{\omega}{F_s}) \\
- \end{aligned}
-\end{equation}
-One sufficient condition of producing linear phase for $y(n)$ is forcing $h_i = h_j$ for all $i+j=M$. This can be visualized in the phasor graph below.
-\begin{figure}
-  \centering
-  % Requires \usepackage{graphicx}
-  \includegraphics[scale=1.0]{sym_fir_phasor.png}\\
-  \caption{Phasor graph of symmetrical FIR parameters}\label{labelsymfirphasor}
-\end{figure}
